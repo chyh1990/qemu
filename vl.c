@@ -170,6 +170,8 @@ int main(int argc, char **argv)
 #include "ui/qemu-spice.h"
 #include "qapi/string-input-visitor.h"
 
+#include "kprofile/kprofile.h"
+
 //#define DEBUG_NET
 //#define DEBUG_SLIRP
 
@@ -1772,6 +1774,7 @@ static void main_loop(void)
         dev_time += profile_getclock() - ti;
 #endif
     } while (!main_loop_should_exit());
+    kprofile_stop();
 }
 
 static void version(void)
@@ -2558,6 +2561,7 @@ int main(int argc, char **argv, char **envp)
     };
     const char *trace_events = NULL;
     const char *trace_file = NULL;
+    char *profile_elf = NULL;
 
     atexit(qemu_run_exit_notifiers);
     error_set_progname(argv[0]);
@@ -3520,6 +3524,9 @@ int main(int argc, char **argv, char **envp)
             case QEMU_OPTION_object:
                 opts = qemu_opts_parse(qemu_find_opts("object"), optarg, 1);
                 break;
+	    case QEMU_OPTION_profileelf:
+		profile_elf = strdup(optarg);
+		break;
             default:
                 os_parse_cmd_args(popt->index, optarg);
             }
@@ -3991,6 +3998,11 @@ int main(int argc, char **argv, char **envp)
         }
     } else if (autostart) {
         vm_start();
+    }
+
+    if(profile_elf){
+	kprofile_init(profile_elf);
+	free(profile_elf);
     }
 
     os_setup_post();

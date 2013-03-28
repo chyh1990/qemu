@@ -2200,6 +2200,16 @@ Use @var{file1} and @var{file2} as modules and pass arg=foo as parameter to the
 first module.
 ETEXI
 
+DEF("profileelf", HAS_ARG, QEMU_OPTION_profileelf, \
+           "-profileelf file \n", QEMU_ARCH_ALL)
+STEXI
+@item -profileelf @var{file}
+
+Specify profiling kernel file
+ETEXI
+
+
+
 DEF("dtb", HAS_ARG, QEMU_OPTION_dtb, \
     "-dtb    file    use 'file' as device tree image\n", QEMU_ARCH_ALL)
 STEXI
