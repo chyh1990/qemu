@@ -17,6 +17,11 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
+
+#include "qemu-common.h"
+#include "sysemu.h"
+#include "qemu-thread.h"
+
 #include <sys/types.h>
 #include <unistd.h>
 #include <errno.h>
@@ -26,6 +31,7 @@
 //#include <libc-internal.h>
 
 #include "kprofile.h"
+
 #define __setitimer setitimer
 //#define __sigfillset sigfillset
 #define __sigaction  sigaction
@@ -55,9 +61,14 @@ profil_count (void *pc)
    interrupted code.  */
 
 static void
-profil_counter (int signo, void *scp)
+profil_counter (int signo, siginfo_t *scp, void *arg)
 {
+	static unsigned long eips[MAX_PROFILE_CPUS];
 //  profil_count ((void *) GET_PC (scp));
+	int cpus = kprofile_get_eips(eips);
+	int i;
+	for(i=0;i<cpus;i++)
+		profil_count((void*)eips[i]);
 
   /* This is a hack to prevent the compiler from implementing the
      above function call as a sibcall.  The sibcall would overwrite

@@ -20,6 +20,7 @@
 #include "cpu.h"
 #include "ioport.h"
 #include "helper.h"
+#include "kprofile.h"
 
 #if !defined(CONFIG_USER_ONLY)
 #include "softmmu_exec.h"
@@ -341,6 +342,9 @@ void helper_wrmsr(CPUX86State *env)
     case MSR_KERNELGSBASE:
         env->kernelgsbase = val;
         break;
+    case __MSR_KPROFILER:
+	_kmcount_internal(EDI, ESI);
+	break;
 #endif
     case MSR_MTRRphysBase(0):
     case MSR_MTRRphysBase(1):
@@ -600,3 +604,4 @@ void helper_debug(CPUX86State *env)
     env->exception_index = EXCP_DEBUG;
     cpu_loop_exit(env);
 }
+

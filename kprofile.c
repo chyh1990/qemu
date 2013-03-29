@@ -19,11 +19,26 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "config-host.h"
 #include "elf.h"
+
+#include "monitor.h"
+#include "sysemu.h"
+#include "gdbstub.h"
+#include "dma.h"
+#include "kvm.h"
+#include "qmp-commands.h"
+
+#include "qemu-thread.h"
+#include "cpus.h"
+#include "qtest.h"
+#include "gdbstub.h"
+
+#include "cpus.h"
 #include "kprofile.h"
 
 static FILE* elffd = NULL;
-static int kprofile_on = 0;
+int kprofile_on = 0;
 static Elf64_Shdr max_shdr;
 
 static inline void kprofile_start(unsigned long lowpc, unsigned long highpc)
@@ -86,4 +101,20 @@ void kprofile_stop(void)
 	fprintf(stderr, "kprofile: saving gmon\n");
 	_kmcleanup();
 }
+
+int kprofile_get_eips(unsigned long eips[])
+{
+    	CPUArchState *env;
+	int cnt = 0;
+    	for (env = first_cpu; cnt < MAX_PROFILE_CPUS && env != NULL; env = env->next_cpu) {
+        cpu_synchronize_state(env);
+	if(env->halted)
+		continue;
+#if defined(TARGET_I386)
+	eips[cnt++] = env->eip + env->segs[R_CS].base;
+#endif
+	}
+	return cnt;
+}
+
 

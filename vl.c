@@ -170,7 +170,7 @@ int main(int argc, char **argv)
 #include "ui/qemu-spice.h"
 #include "qapi/string-input-visitor.h"
 
-#include "kprofile/kprofile.h"
+#include "kprofile.h"
 
 //#define DEBUG_NET
 //#define DEBUG_SLIRP

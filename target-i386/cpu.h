@@ -360,6 +360,8 @@
 
 #define MSR_VM_HSAVE_PA                 0xc0010117
 
+#define __MSR_KPROFILER                 0xfeab0001
+
 /* cpuid_features bits */
 #define CPUID_FP87 (1 << 0)
 #define CPUID_VME  (1 << 1)

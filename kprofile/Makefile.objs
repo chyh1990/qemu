@@ -1,1 +1,1 @@
-common-obj-y += kprofile.o kgmon.o kmcount.o kprofil.o
+common-obj-y += kgmon.o kmcount.o kprofil.o

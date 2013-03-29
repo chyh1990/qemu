@@ -19,8 +19,11 @@
 #ifndef __KPROFILE_H
 #define __KPROFILE_H
 
+#define MAX_PROFILE_CPUS  128
 void kprofile_init(const char* fn);
 void kprofile_stop(void);
+int kprofile_get_eips(unsigned long eips[]);
+
 void _kmcount_internal(unsigned long frompc, unsigned long selfpc); /* _mcount; may be static, inline, etc */
 void _kmcleanup (void);
 void __kwrite_profiling (void);

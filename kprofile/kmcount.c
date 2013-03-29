@@ -36,6 +36,9 @@
 #include "kprofile.h"
 
 extern struct gmonparam _gmonparam;
+extern int kprofile_on;
+
+#define atomic_compare_and_swap __sync_bool_compare_and_swap
 
 /*
  * mcount is called on entry to each function compiled with the profiling
@@ -59,6 +62,8 @@ void _kmcount_internal(unsigned long frompc, unsigned long selfpc)	/* _mcount; m
 	register struct gmonparam *p;
 	register ARCINDEX toindex;
 	int i;
+	if(!kprofile_on)
+		return;
 
 	p = &_gmonparam;
 	/*
@@ -71,10 +76,14 @@ void _kmcount_internal(unsigned long frompc, unsigned long selfpc)	/* _mcount; m
 						   GMON_PROF_ON))
 	  return;
 	*/
+	/*
 	if(p->state != GMON_PROF_ON)
 		return;
 	else
 		p->state = GMON_PROF_BUSY;
+	*/
+	if(!atomic_compare_and_swap(&p->state, GMON_PROF_ON, GMON_PROF_BUSY))
+		return;
 
 	/*
 	 * check that frompcindex is a reasonable pc value.
