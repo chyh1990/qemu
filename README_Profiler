@@ -1,0 +1,42 @@
+DOWNLOAD
+
+git clone git@github.com:eternalNight/ucore_plus-next.git
+git checkout prolifier
+
+git clone git://github.com/chyh1990/qemu.git
+git checkout 1.3-profiler
+
+COMPILATION
+ucore:
+
+make ARCH=amd64 defconfig
+make menuconfig
+** enable prolifier 
+
+make -j4 && make sfsimg
+
+
+qemu:
+
+./configure --prefix=/PATH/TO/qemu_install --enable-debug --disable-pie --target-list=i386-softmmu,x86_64-softmmu                                                                              
+make -j5 && make install
+
+
+RUN
+example:
+
+QEMU="/home/chenyh/os/cpu/qemu_install/bin/qemu-system-x86_64"  
+
+
+PROFILE="-profileelf obj/kernel/kernel-amd64.elf"       <<<<<<<<<<<< activate the prolifier
+           
+$QEMU -no-kvm -m 512 -hda obj/kernel.img -drive \               
+file=obj/sfs.img,media=disk,cache=writeback,index=2  -serial \  
+mon:stdio -nographic $PROFILE        
+
+
+RESULT
+this will generate a kgmon.out file, use gprof to analysis it.
+
+gprof obj/kernel/kernel-amd64.elf  kgmon.out                           
+

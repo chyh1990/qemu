@@ -111,6 +111,7 @@ int kprofile_get_eips(unsigned long eips[])
 	if(env->halted)
 		continue;
 #if defined(TARGET_I386)
+	//XXX only for longmode
 	eips[cnt++] = env->eip;// + env->segs[R_CS].base;
 #endif
 	}
